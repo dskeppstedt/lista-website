@@ -1,3 +1,3 @@
 window.onload = function () {
-	alert("Hello World!");
+    load_app_info();
 }
