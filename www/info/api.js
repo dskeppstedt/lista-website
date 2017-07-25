@@ -6,7 +6,7 @@ function load_app_info() {
 }
 
 function setup_html(info) {
-    var body = document.body;
+    var body = document.getElementById("index-header");
     var header = document.createElement("h1");
     header.textContent = "Welcome to " + info.name; 
     body.appendChild(header);

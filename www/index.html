@@ -6,16 +6,30 @@
         <title>Lista</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="apple-touch-icon" href="apple-touch-icon.png">
-
         <link rel="stylesheet" href="css/main.css">
+        <link rel="stylesheet" href="signup/style.css">
     </head>
     <body>
         <!--[if lt IE 8]>
             <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
+        <header id = "index-header">
+        </header>
+
+
+        <div id="form-container">
+                <form id = "user-credentials-form" >
+                    <label>📧</label>
+                    <input placeholder="Enter email" type="email" name="email"></input></br>
+                    <label>🔐</label>
+                    <input placeholder="Enter password" type="password" name="password"></input></br>
+                    <button id ="button_signup">Sign up</button>
+                    <button id ="button_login">Login</button>
+                </form>
+        </div>
 
        <script src="js/main.js"></script>
 	   <script src="info/api.js"></script>
+       <script src ="signup/code.js"></script>
     </body>
 </html>

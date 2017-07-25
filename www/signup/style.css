@@ -1,0 +1,14 @@
+#form-container {
+    border: 1px solid black;
+    padding: 1.2em;
+}
+#form-container button {
+    border-radius: 1.2em;
+    border:1px solid black;
+    margin-top: 1.2em;
+}
+
+#form-container input {
+    border: 1px dashed gray;
+    margin-left: 1.05em;
+}
