@@ -3,4 +3,9 @@ window.onload = function () {
     document.getElementById("button_signup").addEventListener("click",singup_button_click);
     document.getElementById("button_login").addEventListener("click",login_button_click);
 
+    if (checkStoredTokens()) {
+        //redirect to profile site asap
+        goToProfile();
+    }
+
 }
