@@ -121,7 +121,8 @@ function checkStoredTokens() {
     if (storageAvailable("localStorage")) {
         var auth = localStorage.getItem("auth");
         var refresh = localStorage.getItem("refresh");
-        if (auth != null && refresh != null) {
+        var email = localStorage.getItem("email");
+        if (auth != null && refresh != null && email != null) {
             return true;
         }
         console.log("Tokens missing, need to login...")
