@@ -138,6 +138,6 @@ function storeEmail(data) {
 }
 
 function goToProfile(){
-    var profile_url = "http://"+location.hostname+":8080/profile.html";
+    var profile_url = "http://"+location.hostname+":8080/lista.html";
     window.location.href = profile_url;
 }
