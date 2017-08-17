@@ -1,5 +1,5 @@
 var todosContainer;
-var dataTodos = [];
+var dataTodos = new Map(); 
 
 window.onload = function () {
     //entrypoint
@@ -56,7 +56,7 @@ function readTodos() {
                 var todos = request.response;
                 todos.forEach(function(todo){
                     addTodoElement(todo);
-                    dataTodos.push(todo);
+                    dataTodos.set(todo._id,todo);
                 });
             }
         }
@@ -66,36 +66,133 @@ function readTodos() {
 function addTodoElement(todo){
     var div = document.createElement("div");
     div.id = todo._id;
+    
     if (todo.done) {
         div.className = "todo todo-done";
     } else {
         div.className = "todo";
     }
 
+    //Add todo text
     var title = document.createElement("h3");
     title.textContent = todo.title;
     div.appendChild(title);
-    todosContainer.appendChild(div);
-
+    //Make todo clickable
     div.addEventListener("click",pressTodo);
+
+    //Add edit button and input, hidden by default
+    var editInput = document.createElement("input");
+    editInput.style.display = "none";
+    div.appendChild(editInput);
+
+    var editButton = document.createElement("button");
+    editButton.textContent = "Edit";
+    editButton.addEventListener("click",function (event) {
+        pressEditButtonOnTodo(event,editInput,div);
+    });
+    
+    div.appendChild(editButton);
+
+    var deleteButton = document.createElement("button");
+    deleteButton.textContent = "Delete";
+    deleteButton.addEventListener("click", pressDeleteButtonOnTodo);
+    
+    div.appendChild(deleteButton);
+
+    todosContainer.appendChild(div);
 }
 
 //UPDATE
 function pressTodo(event){
-    console.log("Todo pressed! " + event.currentTarget.id);
 
-    deleteTodo(event.currentTarget.id.toString(),function(){
-        removeTodoTags();
-        readTodos();
-    });
-
-return; // REMOVE THIS WHEN PRESSED SHOULD MEAN SET TODO TO DONE
+    if (event.currentTarget != event.target) {
+        return;
+    }
 
     if (event.currentTarget.className == "todo") {
         event.currentTarget.className = "todo todo-done";
     } else {
         event.currentTarget.className = "todo";
     }
+
+
+    var todo = findTodo(event.currentTarget.id);
+    todo.done = !todo.done;
+
+    updateTodo(todo,function(){});
+
+}
+
+function findTodo(id) {
+    return dataTodos.get(id);
+}
+
+function pressEditButtonOnTodo(event,input,div) {
+    event.preventDefault();
+    console.log(input);
+    if (input.style.display == "inline") {
+        //set input to hidden, send todo to api
+        input.style.display = "none";
+        event.currentTarget.textContent = "Edit";
+
+        var todo = {};
+        //create the todo..
+        if (div.className == "todo") {
+            todo.done = false;
+        }else {
+            todo.done = true;
+        }
+
+        todo._id = div.id;
+        todo.title = input.value;
+        
+
+        updateTodo(todo,function() {
+            removeTodoTags();
+            readTodos();
+        });
+
+
+    } else {
+        input.style.display = "inline";
+        event.currentTarget.textContent = "Done";
+    }
+
+}
+
+function updateTodo(todo,completion) {
+
+    var api_url = ":8081/todo/"+todo._id
+    var url = "http://"+location.hostname+api_url;
+    var request = new XMLHttpRequest();
+    request.open("PUT",url,true);
+    request.setRequestHeader("Content-Type","application/json");
+    request.setRequestHeader("Authorization","Bearer "+ getJWT());
+    request.send(JSON.stringify(todo));
+
+    request.onreadystatechange = function() {
+        if (request.readyState === XMLHttpRequest.DONE){
+            if (request.status == 200) {
+                console.log("Todo created successfully");
+                console.log(request.response);
+                completion();
+            }
+        }
+    }
+
+
+}
+
+
+//DELETE
+function pressDeleteButtonOnTodo(event) {
+    console.log("Todo pressed! " + event.currentTarget.parentNode.id);
+    var todoId = event.currentTarget.parentNode.id.toString();
+    deleteTodo(todoId,function(){
+        removeTodoTags();
+        readTodos();
+    });
+
 }
 
 function deleteTodo(id,completion){
