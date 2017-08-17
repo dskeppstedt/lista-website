@@ -43,20 +43,3 @@ html{
     text-decoration: line-through;
     background-color: gray;
 }
-
-footer{
-    position: absolute;
-    bottom:0;
-    left: 0;
-    right: 0;
-    height: 10em;
-    background-color: #801818;
-    color: white;
-}
-footer p{
-    padding: 10px;
-}
-
-#copy{
-    text-align: center;
-}
