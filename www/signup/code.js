@@ -1,15 +1,9 @@
-function form_to_json (formid) {
-    var form = document.getElementById(formid);
-    if (form === null) {
-        throw("No form with that id");
-    }
-
-    var formdata = new FormData(form);
-    var data = {};
-    for (entry of formdata.entries()) {
-        data[entry[0]] = entry[1];
-    }
-
+function form_to_json () {
+    data = {};
+    var email = document.getElementById("email").value;
+    var password = document.getElementById("password").value;
+    data.email = email;
+    data.password = password;
     var json = JSON.stringify(data);
     return json;
 }
@@ -17,15 +11,14 @@ function form_to_json (formid) {
 function singup_button_click(event) {
     event.preventDefault();
     console.log("Sign up button clicked");
-    var json = form_to_json("user-credentials-form");
-    console.log(form_to_json("user-credentials-form"));
+    var json = form_to_json();
     signup(json);
 }
 
 function login_button_click(event){
     event.preventDefault();
     console.log("Login button clicked");
-    var json = form_to_json("user-credentials-form");
+    var json = form_to_json();
     login(json);
 }
 
