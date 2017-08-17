@@ -22,14 +22,17 @@ window.onload = function () {
         var code = (event.keyCode ? event.keyCode: event.which);
         if (code === 13) {
             console.log("Enter pressed!");
-            addTodoOnEnterPress(todoInput);
-            removeTodoElemnts();
-            readTodos();
+            
+            addTodoOnEnterPress(todoInput,function () {
+                removeTodoTags();
+                readTodos();
+            });
+
         }
     });
 }
 
-function removeTodoElemnts(){
+function removeTodoTags(){
     while (todosContainer.firstChild) {
         todosContainer.removeChild(todosContainer.firstChild);
     }
@@ -81,8 +84,12 @@ function addTodoElement(todo){
 function pressTodo(event){
     console.log("Todo pressed! " + event.currentTarget.id);
 
-    deleteTodo(event.currentTarget.id.toString());
-return;
+    deleteTodo(event.currentTarget.id.toString(),function(){
+        removeTodoTags();
+        readTodos();
+    });
+
+return; // REMOVE THIS WHEN PRESSED SHOULD MEAN SET TODO TO DONE
 
     if (event.currentTarget.className == "todo") {
         event.currentTarget.className = "todo todo-done";
@@ -91,7 +98,7 @@ return;
     }
 }
 
-function deleteTodo(id){
+function deleteTodo(id,completion){
     var api_url = ":8081/todo/"+id;
     var url = "http://"+location.hostname+api_url;
     var request = new XMLHttpRequest();
@@ -104,8 +111,7 @@ function deleteTodo(id){
         if (request.readyState === XMLHttpRequest.DONE){
             if (request.status == 200) {
                 console.log("Todo deleted sucessfully");
-                removeTodoElemnts();
-                readTodos();
+                completion();
             }
         }
     } 
@@ -114,18 +120,18 @@ function deleteTodo(id){
 
 
 //CREATE
-function addTodoOnEnterPress(inputElement) {
+function addTodoOnEnterPress(inputElement,completion) {
     if (inputElement.value.length < 1) {
         console.log("No text, nothing to add...")
         return;
     }
     var todo = {};
     todo.title = inputElement.value;
-    createTodo(JSON.stringify(todo));
+    createTodo(JSON.stringify(todo),completion);
     inputElement.value = "";
 }
 
-function createTodo(todo){
+function createTodo(todo,completion){
     var api_url = ":8081/todo"
     var url = "http://"+location.hostname+api_url;
     var request = new XMLHttpRequest();
@@ -140,6 +146,7 @@ function createTodo(todo){
             if (request.status == 200) {
                 console.log("Todo created successfully");
                 console.log(request.response);
+                completion();
             }
         }
     }
