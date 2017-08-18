@@ -38,7 +38,10 @@ function signup(json) {
                 storeEmail(json);
                 storeTokens(request.response);
                 goToProfile();
+            }else {
+                alert("An account has already been registered with this email");
             }
+
         }
     }
 
@@ -61,6 +64,8 @@ function login(json) {
                 storeEmail(json);
                 storeTokens(request.response)
                 goToProfile();
+            }else{
+                alert("The email/password combination is incorrect.");
             }
         }
     }
