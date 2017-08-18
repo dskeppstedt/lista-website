@@ -7,6 +7,7 @@ window.onload = function () {
         //bail!
         goToIndex();
     }
+    document.getElementById("logout").addEventListener("click",logoutPressed);
 
     todosContainer = document.getElementById("todos");
 
@@ -31,6 +32,12 @@ window.onload = function () {
         }
     });
 }
+
+function logoutPressed(event) {
+    localStorage.clear();
+    goToIndex();
+}
+
 
 function removeTodoTags(){
     while (todosContainer.firstChild) {
