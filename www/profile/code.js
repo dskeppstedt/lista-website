@@ -11,12 +11,8 @@ window.onload = function () {
 
     todosContainer = document.getElementById("todos");
 
-    //TODO: DO NOT FORGET TO WRAP ALL SERVER CALLS WITH REFRESH JWT SOMEHOW
-    refreshJWT(function(){
-        console.log("Well we are authorized now, one way or another..");
-        fetchProfile();
-        readTodos();
-    });
+    fetchProfile();
+    readTodos();
 
     var todoInput = document.getElementById("lista-input");
     todoInput.addEventListener("keypress",function(event){
@@ -47,27 +43,29 @@ function removeTodoTags(){
 
 //READ
 function readTodos() {
-    var api_url = ":8081/todos"
-    var url = "http://"+location.hostname+api_url;
-    var request = new XMLHttpRequest();
-    request.open("POST",url,true);
-    request.setRequestHeader("Content-Type","application/json");
-    request.setRequestHeader("Authorization","Bearer "+ getJWT());
-    request.responseType = "json";
-    request.send();
+    refreshJWT(function() {
+        var api_url = ":8081/todos"
+        var url = "http://"+location.hostname+api_url;
+        var request = new XMLHttpRequest();
+        request.open("POST",url,true);
+        request.setRequestHeader("Content-Type","application/json");
+        request.setRequestHeader("Authorization","Bearer "+ getJWT());
+        request.responseType = "json";
+        request.send();
 
-    request.onreadystatechange = function() {
-        if (request.readyState === XMLHttpRequest.DONE){
-            if (request.status == 200) {
-                console.log(request.response);
-                var todos = request.response;
-                todos.forEach(function(todo){
-                    addTodoElement(todo);
-                    dataTodos.set(todo._id,todo);
-                });
+        request.onreadystatechange = function() {
+            if (request.readyState === XMLHttpRequest.DONE){
+                if (request.status == 200) {
+                    console.log(request.response);
+                    var todos = request.response;
+                    todos.forEach(function(todo){
+                        addTodoElement(todo);
+                        dataTodos.set(todo._id,todo);
+                    });
+                }
             }
         }
-    }
+    });
 }
 
 function addTodoElement(todo){
@@ -163,31 +161,31 @@ function pressEditButtonOnTodo(event,input,div) {
     } else {
         input.style.display = "inline";
         event.currentTarget.textContent = "Done";
+        input.value = findTodo(div.id).title
     }
 
 }
 
 function updateTodo(todo,completion) {
-
-    var api_url = ":8081/todo/"+todo._id
-    var url = "http://"+location.hostname+api_url;
-    var request = new XMLHttpRequest();
-    request.open("PUT",url,true);
-    request.setRequestHeader("Content-Type","application/json");
-    request.setRequestHeader("Authorization","Bearer "+ getJWT());
-    request.send(JSON.stringify(todo));
-
-    request.onreadystatechange = function() {
-        if (request.readyState === XMLHttpRequest.DONE){
-            if (request.status == 200) {
-                console.log("Todo created successfully");
-                console.log(request.response);
-                completion();
+    refreshJWT(function(){
+        var api_url = ":8081/todo/"+todo._id
+        var url = "http://"+location.hostname+api_url;
+        var request = new XMLHttpRequest();
+        request.open("PUT",url,true);
+        request.setRequestHeader("Content-Type","application/json");
+        request.setRequestHeader("Authorization","Bearer "+ getJWT());
+        request.send(JSON.stringify(todo));
+    
+        request.onreadystatechange = function() {
+            if (request.readyState === XMLHttpRequest.DONE){
+                if (request.status == 200) {
+                    console.log("Todo created successfully");
+                    console.log(request.response);
+                    completion();
+                }
             }
         }
-    }
-
-
+    });
 }
 
 
@@ -203,22 +201,24 @@ function pressDeleteButtonOnTodo(event) {
 }
 
 function deleteTodo(id,completion){
-    var api_url = ":8081/todo/"+id;
-    var url = "http://"+location.hostname+api_url;
-    var request = new XMLHttpRequest();
-    request.open("DELETE",url,true);
-    request.setRequestHeader("Content-Type","application/json");
-    request.setRequestHeader("Authorization","Bearer "+ getJWT());
-    request.send();
-
-    request.onreadystatechange = function() {
-        if (request.readyState === XMLHttpRequest.DONE){
-            if (request.status == 200) {
-                console.log("Todo deleted sucessfully");
-                completion();
+    refreshJWT(function() {
+        var api_url = ":8081/todo/"+id;
+        var url = "http://"+location.hostname+api_url;
+        var request = new XMLHttpRequest();
+        request.open("DELETE",url,true);
+        request.setRequestHeader("Content-Type","application/json");
+        request.setRequestHeader("Authorization","Bearer "+ getJWT());
+        request.send();
+    
+        request.onreadystatechange = function() {
+            if (request.readyState === XMLHttpRequest.DONE){
+                if (request.status == 200) {
+                    console.log("Todo deleted sucessfully");
+                    completion();
+                }
             }
-        }
-    } 
+        } 
+    });
 }
 
 
@@ -236,45 +236,49 @@ function addTodoOnEnterPress(inputElement,completion) {
 }
 
 function createTodo(todo,completion){
-    var api_url = ":8081/todo"
-    var url = "http://"+location.hostname+api_url;
-    var request = new XMLHttpRequest();
-    request.open("POST",url,true);
-    request.setRequestHeader("Content-Type","application/json");
-    request.setRequestHeader("Authorization","Bearer "+ getJWT());
-    request.responseText = "json";
-    request.send(todo);
-
-    request.onreadystatechange = function() {
-        if (request.readyState === XMLHttpRequest.DONE){
-            if (request.status == 200) {
-                console.log("Todo created successfully");
-                console.log(request.response);
-                completion();
+    refreshJWT(function(){
+        var api_url = ":8081/todo"
+        var url = "http://"+location.hostname+api_url;
+        var request = new XMLHttpRequest();
+        request.open("POST",url,true);
+        request.setRequestHeader("Content-Type","application/json");
+        request.setRequestHeader("Authorization","Bearer "+ getJWT());
+        request.responseText = "json";
+        request.send(todo);
+    
+        request.onreadystatechange = function() {
+            if (request.readyState === XMLHttpRequest.DONE){
+                if (request.status == 200) {
+                    console.log("Todo created successfully");
+                    console.log(request.response);
+                    completion();
+                }
             }
         }
-    }
+    });
 }
 
 
 function fetchProfile() {
-    var api_url = ":8081/profile"
-    var url = "http://"+location.hostname+api_url;
-    var request = new XMLHttpRequest();
-    request.open("GET",url,true);
-    request.setRequestHeader("Content-Type","application/json");
-    request.setRequestHeader("Authorization","Bearer "+ getJWT());
-    request.responseType = "json";
-    request.send();
-
-    request.onreadystatechange = function() {
-        if (request.readyState === XMLHttpRequest.DONE){
-            if (request.status == 200) {
-                console.log(request.response);
-                document.getElementById("profile-email").textContent = request.response.Email;
+    refreshJWT(function(){
+        var api_url = ":8081/profile"
+        var url = "http://"+location.hostname+api_url;
+        var request = new XMLHttpRequest();
+        request.open("GET",url,true);
+        request.setRequestHeader("Content-Type","application/json");
+        request.setRequestHeader("Authorization","Bearer "+ getJWT());
+        request.responseType = "json";
+        request.send();
+    
+        request.onreadystatechange = function() {
+            if (request.readyState === XMLHttpRequest.DONE){
+                if (request.status == 200) {
+                    console.log(request.response);
+                    document.getElementById("profile-email").textContent = request.response.Email;
+                }
             }
         }
-    }
+    });
 }
 
 function refreshJWT(completion) {
